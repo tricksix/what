@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs').promises;
 const mime = require('mime-types');
 const venom = require('venom-bot');
 const express = require('express');
@@ -99,7 +99,7 @@ async function start(client) {
           await client
             .sendImage(
               req.body.phone_number,
-              './gambar/wa_image.jpg',
+              './gambar/wa_image.png',
               'WebSekolah',
               req.body.phone_message
             )
@@ -216,7 +216,7 @@ async function start(client) {
   client.onMessage(async (message) => {
     if (message.body == 'HELP' || message.body === 'Help' || message.body === 'help' && message.isGroupMsg == true) {
       client
-        .sendText(message.from, '```Hai ini pesan otomatis, Silahkan ketik kata :``` *menu*')
+        .sendText(message.from, '```Hai ini pesan otomatis edunesia, Silahkan ketik kata :``` *Hallo*')
         .then((result) => {
           console.log('Result: ', result); //return object success
         })
@@ -224,19 +224,19 @@ async function start(client) {
           console.error('Error when sending: ', erro); //return object error
         });
     } 
-    // else if (message.body === 'Stiker' || message.body === 'stiker' && message.isGroupMsg === false) {
-    //   client
-    //     .sendImageAsSticker(message.from, './image.jpeg')
-    //     .then((result) => {
-    //       console.log('Result: ', result); //return object success
-    //     })
-    //     .catch((erro) => {
-    //       console.error('Error when sending: ', erro); //return object error
-    //     });
-    // } 
+    else if (message.body === 'Stiker' || message.body === 'stiker' && message.isGroupMsg === false) {
+      client
+        .sendImageAsSticker(message.from, './foto.jpg')
+        .then((result) => {
+          console.log('Result: ', result); //return object success
+        })
+        .catch((erro) => {
+          console.error('Error when sending: ', erro); //return object error
+        });
+    } 
     else if (message.body === '1' && message.isGroupMsg === false) {
       client
-        .sendText(message.from, 'Silahkan Mengikuti tautan ini untuk melakukan prosees pendaftaran\n🌐 https://websekolah.site/\n\n ```Pastikan mengisi form dengan lengkap```')
+        .sendText(message.from, 'Silahkan Mengikuti tautan ini untuk melakukan prosees pendaftaran\n🌐 https://edunesa.com/\n\n ```Pastikan mengisi form dengan lengkap```')
         .then((result) => {
           console.log('Result: ', result); //return object success
         })
@@ -245,7 +245,7 @@ async function start(client) {
         });
     } else if (message.body === '2' && message.isGroupMsg === false) {
       client
-        .sendText(message.from, 'Silahkan membagikan lokasi pemasangan / lakukan share lokasi saat anda berada pada lokasi yang tepat👍\n\nMohon kami diberikan informasi tentang:\nNama : ...\nAlamat Eumah : ...\nIngin disurvey tgl : ...\nJam survey : ...\n\n```Sebelum disurvey lokasi pemasangan oleh petugas lapangan dan atau marketing, maka pihak WargaNet akan membuat janji ketemu sesuai waktu dan tempat yang telah disepakati.```')
+        .sendText(message.from, 'Silahkan membagikan lokasi anda / lakukan share lokasi saat anda berada pada lokasi yang tepat👍\n\nMohon kami diberikan informasi tentang:\nNama : ...\nID / Kelas : ...\nMetode Pembelajaran : ...\nKeluhan : ...\n\n```Admin akan menghubungi anda sesegera mungkin```')
         .then((result) => {
           console.log('Result: ', result); //return object success
         })
@@ -254,31 +254,41 @@ async function start(client) {
         });
     } else if (message.body === '3' && message.isGroupMsg === false) {
       client
-        .sendText(message.from, 'Silahkan berbincang dengan admin kami,\n*Rita*\n☎ 0000 \n```atau```\n ☎ 6666')
+        .sendText(message.from, 'Silahkan berbincang dengan admin kami,\n*Ahmad*\n☎ https://wa.me/6281216800840 \n```atau```\n*Lili*\n ☎ https://wa.me/6285649998134')
         .then((result) => {
           console.log('Result: ', result); //return object success
         })
         .catch((erro) => {
           console.error('Error when sending: ', erro); //return object error
         });
-    } else if (message.body === 'Menu' || message.body === 'menu' && message.isGroupMsg === true) {
+    } else if (message.body === 'Hallo' || message.body === 'hallo' || message.body === 'Hai' && message.isGroupMsg === true) {
       client
-        .sendText(message.from, 'Cukup ya coba nya. \n Nantinya kamu bisa memilih menu di bawah ini :\n\n1⃣ Informasi Jam Layanan\n2⃣ Layanan Darurat\n3⃣ Berbicara langsung dengan tim ahli\n\n```Pesan Ini Dikirim Otomatis Oleh Sistem```\nHappy Online')
+        .sendText(message.from, 'Selamat datang di edunesia.com. \n Kamu bisa memilih menu di bawah ini :\n\n1⃣ Informasi Pendaftaran\n2⃣ Layanan Keluhan\n3⃣ Berbicara langsung dengan Admin kami\n\n```Pesan Ini Dikirim Otomatis Oleh Sistem```\nHappy Online')
         .then((result) => {
           console.log('Result: ', result); //return object success
         })
         .catch((erro) => {
           console.error('Error when sending: ', erro); //return object error
         });
-    } else if (message.isMedia === true || message.isMMS === true && message.isGroupMsg === true) {
-      const buffer = await client.decryptFile(message);
-      // At this point you can do whatever you want with the buffer
-      // Most likely you want to write it into a file
-      const fileName = `some-file-name.${mime.extension(message.mimetype)}`;
-      await fs.writeFile(fileName, buffer, (err) => {
-        client.sendImageAsSticker(message.from, fileName);
-        client.sendText(message.from, '\n🌐 ```Pesan Otomatis, Saya dalam perbaikan robo_server``` \nSilahkan ketik kata : *help*');
-      });
+    } else if (message.isMedia === true || message.isMMS === true) {
+      try {
+        console.log('Media message received, processing...');
+        const buffer = await client.decryptFile(message);
+        const fileName = `some-file-name.${mime.extension(message.mimetype)}`;
+        
+        console.log('Writing file to disk:', fileName);
+        await fs.writeFile(fileName, buffer);
+        
+        console.log('Sending image as sticker...');
+        await client.sendImageAsSticker(message.from, fileName);
+        
+        console.log('Sticker sent, deleting file...');
+        await fs.unlink(fileName);
+        
+        console.log('File deleted successfully.');
+      } catch (err) {
+        console.error('Error processing media message:', err);
+      }
     }
   });
   client.onStateChange((state) => {
